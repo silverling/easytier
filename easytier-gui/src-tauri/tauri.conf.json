@@ -10,7 +10,6 @@
     "targets": "all",
     "icon": [
       "icons/icon.png",
-      "icons/icon.rgba",
       "icons/icon.icns",
       "icons/icon.ico"
     ],

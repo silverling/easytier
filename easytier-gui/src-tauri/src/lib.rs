@@ -245,7 +245,7 @@ pub fn run() {
                     }
                 })
                 .icon(tauri::image::Image::from_bytes(include_bytes!(
-                    "../icons/icon.png"
+                    "../icons/icon-macos-tray.png"
                 ))?)
                 .icon_as_template(false)
                 .build(app)?;
