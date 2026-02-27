@@ -15,7 +15,7 @@
     ],
     "createUpdaterArtifacts": false
   },
-  "productName": "easytier-gui",
+  "productName": "EasyTier",
   "version": "2.4.5",
   "identifier": "com.kkrainbow.easytier",
   "plugins": {
@@ -26,9 +26,9 @@
   "app": {
     "windows": [
       {
-        "title": "easytier-gui",
-        "width": 800,
-        "height": 600
+        "title": "EasyTier",
+        "width": 1280,
+        "height": 800
       }
     ],
     "security": {
