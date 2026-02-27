@@ -1,5 +1,13 @@
 @layer tailwind-base, primevue, tailwind-utilities;
 
+@font-face {
+  font-family: 'Tahoma';
+  src: url('../assets/fonts/tahoma.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer tailwind-base {
   @tailwind base;
 }
@@ -10,7 +18,7 @@
 }
 
 :root {
-  font-family: Inter, Tahoma, Helvetica, Arial, "Noto Sans CJK SC", "PingFang SC", sans-serif;
+  font-family: 'Tahoma', Inter, Helvetica, Arial, "Noto Sans CJK SC", "PingFang SC", sans-serif;
   font-size: 12px;
   line-height: 24px;
   font-weight: 400;
