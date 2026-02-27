@@ -13,7 +13,6 @@ import { NetworkTypes, Config, Status, Utils, I18nUtils, ConfigEditDialog } from
 import { isAutostart, setLoggingLevel } from '~/composables/network'
 import { useTray } from '~/composables/tray'
 import { getAutoLaunchStatusAsync as getAutoLaunchStatus, loadAutoLaunchStatusAsync } from '~/modules/auto_launch'
-import { getDockVisibilityStatus, loadDockVisibilityAsync } from '~/modules/dock_visibility'
 
 const { t, locale } = useI18n()
 const visible = ref(false)
@@ -177,14 +176,6 @@ const setting_menu_items = ref([
     command: async () => {
       await loadAutoLaunchStatusAsync(!getAutoLaunchStatus())
     },
-  },
-  {
-    label: () => getDockVisibilityStatus() ? t('hide_dock_icon') : t('show_dock_icon'),
-    icon: 'pi pi-eye-slash',
-    command: async () => {
-      await loadDockVisibilityAsync(!getDockVisibilityStatus())
-    },
-    visible: () => type() === 'macos',
   },
   {
     label: () => t('logging'),

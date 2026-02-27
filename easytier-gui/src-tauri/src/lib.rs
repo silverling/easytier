@@ -129,19 +129,29 @@ fn set_tun_fd(instance_id: String, fd: i32) -> Result<(), String> {
 }
 
 #[cfg(not(target_os = "android"))]
-fn toggle_window_visibility<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
+fn toggle_window_visibility(app: &tauri::AppHandle, visible: Option<bool>) {
     if let Some(window) = app.get_webview_window("main") {
-        if window.is_visible().unwrap_or_default() {
-            if window.is_minimized().unwrap_or_default() {
-                let _ = window.unminimize();
-                let _ = window.set_focus();
+        let target_visible = visible.unwrap_or_else(|| {
+            let current_visible = if window.is_visible().unwrap_or_default() {
+                if window.is_minimized().unwrap_or_default() {
+                    let _ = window.unminimize();
+                    false
+                } else {
+                    true
+                }
             } else {
-                let _ = window.hide();
-            }
-        } else {
+                false
+            };
+            !current_visible
+        });
+        if target_visible {
             let _ = window.show();
+            let _ = window.unminimize();
             let _ = window.set_focus();
+        } else {
+            let _ = window.hide();
         }
+        let _ = set_dock_visibility(app.clone(), target_visible);
     }
 }
 
@@ -241,13 +251,13 @@ pub fn run() {
                     } = event
                     {
                         let app = tray.app_handle();
-                        toggle_window_visibility(app);
+                        toggle_window_visibility(app, None);
                     }
                 })
                 .icon(tauri::image::Image::from_bytes(include_bytes!(
                     "../icons/icon-macos-tray.png"
                 ))?)
-                .icon_as_template(false)
+                .icon_as_template(true)
                 .build(app)?;
 
             Ok(())
@@ -269,6 +279,7 @@ pub fn run() {
             #[cfg(not(target_os = "android"))]
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 let _ = _win.hide();
+                let _ = set_dock_visibility(_win.app_handle().clone(), false);
                 api.prevent_close();
             }
             _ => {}
@@ -276,17 +287,10 @@ pub fn run() {
         .build(tauri::generate_context!())
         .unwrap();
 
-    #[cfg(not(target_os = "macos"))]
-    app.run(|_app, _event| {});
-
-    #[cfg(target_os = "macos")]
-    {
-        use tauri::RunEvent;
-        app.run(|app, event| match event {
-            RunEvent::Reopen { .. } => {
-                toggle_window_visibility(app);
-            }
-            _ => {}
-        });
-    }
+    app.run(|app, event| {
+        #[cfg(target_os = "macos")]
+        if let tauri::RunEvent::Reopen { .. } = event {
+            toggle_window_visibility(app, Some(true));
+        }
+    });
 }
