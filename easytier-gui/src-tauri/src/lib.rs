@@ -30,6 +30,7 @@ fn easytier_version() -> Result<String, String> {
     Ok(easytier::VERSION.to_string())
 }
 
+/// Set the dock icon visibility on macOS.
 #[tauri::command]
 fn set_dock_visibility(app: tauri::AppHandle, visible: bool) -> Result<(), String> {
     #[cfg(target_os = "macos")]
@@ -42,6 +43,7 @@ fn set_dock_visibility(app: tauri::AppHandle, visible: bool) -> Result<(), Strin
         })
         .map_err(|e| e.to_string())?;
     }
+
     #[cfg(not(target_os = "macos"))]
     let _ = (app, visible);
     Ok(())
@@ -131,18 +133,20 @@ fn set_tun_fd(instance_id: String, fd: i32) -> Result<(), String> {
 #[cfg(not(target_os = "android"))]
 fn toggle_window_visibility(app: &tauri::AppHandle, visible: Option<bool>) {
     if let Some(window) = app.get_webview_window("main") {
+        // Only hide window when it is unminimised and focused.
         let target_visible = visible.unwrap_or_else(|| {
-            let current_visible = if window.is_visible().unwrap_or_default() {
+            if window.is_visible().unwrap_or_default() {
                 if window.is_minimized().unwrap_or_default() {
                     let _ = window.unminimize();
-                    false
-                } else {
                     true
+                } else if !window.is_focused().unwrap_or_default() {
+                    true
+                } else {
+                    false
                 }
             } else {
-                false
-            };
-            !current_visible
+                true
+            }
         });
         if target_visible {
             let _ = window.show();
